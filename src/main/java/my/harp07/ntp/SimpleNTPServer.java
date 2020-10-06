@@ -1,19 +1,4 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package my.harp07.ntp;
 
 import org.apache.commons.net.ntp.NtpUtils;
@@ -100,7 +85,7 @@ public class SimpleNTPServer implements Runnable {
             if (port == 0) {
                 port = socket.getLocalPort();
             }
-            System.out.println("Running NTP service on port " + port + "/UDP");
+            System.out.println("NTP-server v.1.0.1 running on port " + port + "/UDP");
         }
     }
 
@@ -211,14 +196,16 @@ public class SimpleNTPServer implements Runnable {
             timeServer.start();
             System.out.println("Enter 'stop' to close server");
             Scanner sc = new Scanner(System.in);
-            while (true) {
-                if (timeServer.isRunning() && sc.next().toLowerCase().trim().equals("stop")) {
-                    timeServer.stop();
-                    break;
+            new Thread(() -> {
+                while (true) {
+                    if (timeServer.isRunning() && sc.next().toLowerCase().trim().equals("stop")) {
+                        timeServer.stop();
+                        System.out.println("Server is closing");
+                        System.exit(0);                    
+                        break;
+                    }
                 }
-            }
-            System.out.println("Server is closing");
-            System.exit(0);
+            }).start();
         } catch (final IOException e) {
             e.printStackTrace();
         }
